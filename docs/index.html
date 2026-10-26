@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Codebase Intelligence Engine</title>
+<style>
+:root{--bg:#070b14;--sb:#0a101d;--cd:#0d1424;--bd:#1a2438;--tx:#e6ebf5;--mu:#8592aa;--bl:#2563eb}
+*{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--tx);font:14px/1.4 Inter,system-ui,sans-serif;display:flex;min-height:100vh}
+aside{width:230px;background:var(--sb);border-right:1px solid var(--bd);padding:18px 12px;position:sticky;top:0;height:100vh;flex:none}
+.logo{font-weight:700;font-size:15px;padding:4px 8px 22px;display:flex;gap:8px;align-items:center}.logo b{color:#3b82f6;font-family:monospace}
+nav a{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;color:#aab4c8;cursor:pointer;margin-bottom:4px}nav a.on{background:var(--bl);color:#fff}nav a:hover:not(.on){background:#121b2e}
+main{flex:1;padding:22px 26px;min-width:0}h1{font-size:22px}.sub{color:var(--mu);font-size:13px;margin:2px 0 16px}
+.row{display:grid;gap:14px;margin-bottom:14px}.c4{grid-template-columns:repeat(4,1fr)}.c3{grid-template-columns:repeat(3,1fr)}.c2{grid-template-columns:1fr 1.3fr}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;min-width:0}.card h3{font-size:14px;margin-bottom:10px}
+.stat{display:flex;gap:14px;align-items:center}.ic{width:54px;height:54px;border-radius:8px;display:grid;place-items:center;font-size:24px}.stat b{font-size:26px;display:block}.stat small,.mu{color:var(--mu)}
+.bar{display:flex;gap:8px;margin-bottom:14px}.bar .in{flex:1;background:var(--sb);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-family:monospace}
+button,.btn{background:#121b2e;border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:0 20px;cursor:pointer;font:inherit;display:grid;place-items:center}.pri{background:var(--bl);border-color:var(--bl)}
+table{width:100%;border-collapse:collapse}td,th{padding:7px 6px;text-align:left;border-bottom:1px solid var(--bd);font-size:13px}th{color:var(--mu);font-weight:500}
+.pill{padding:2px 10px;border-radius:4px;font-size:12px;font-weight:600;color:#111}.High{background:#ef4444;color:#fff}.Medium{background:#eab308}.Low{background:#22c55e}
+details{margin-left:14px}summary{cursor:pointer;margin-left:-14px;padding:2px 0}.f{padding:2px 0}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
+.tl{display:grid;grid-template-columns:1fr auto;gap:10px;padding:5px 0;font-size:13px}
+.pillb{float:right;background:var(--cd);border:1px solid var(--bd);padding:7px 14px;border-radius:8px}
+svg{max-width:100%}
+@media(max-width:900px){body{flex-direction:column}aside{width:100%;height:auto;position:static}nav{display:flex;overflow:auto}nav a{white-space:nowrap}.c4,.c3,.c2{grid-template-columns:1fr}}
+</style></head><body>
+<aside><div class="logo"><b>&lt;/&gt;</b>Codebase Intelligence Engine</div><nav></nav></aside><main>Loading…</main>
+<script>
+const NAV=[['Dashboard','▦'],['Repository Analysis','▤'],['Files & Structure','▥'],['Dependencies','⌬'],['Code Metrics','▮'],['Git Insights','⑂'],['Reports','▣']];
+const T=[['Dashboard','Overview of your repository analysis'],['Repository Analysis','Analyze your Python repository and get comprehensive insights'],['Files & Structure','Every analyzed Python file, largest first'],['Dependencies','Internal imports and external libraries'],['Code Metrics','Size, complexity and maintainability'],['Code Quality & Git Insights','Understand code quality, complexity and development history'],['Reports','Ranked, explainable hotspot candidates']];
+const PAL=['#3b82f6','#a855f7','#f97316','#3b82f6','#22c55e'];let D,view=+location.hash.slice(1)||0;
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])),S=()=>D.summary;
+const card=(t,b)=>`<div class="card"><h3>${t}</h3>${b}</div>`;
+const stat=(l,v,s,c,i)=>`<div class="card stat"><div class="ic" style="background:${c}33;color:${c}">${i}</div><div><span class="mu">${l}</span><b>${v}</b><small>${s}</small></div></div>`;
+const stats=()=>{const s=S();return `<div class="row c4">${stat('Total Files',s.files,'Python files analyzed','#3b82f6','▤')+stat('Modules',s.modules,'Packages & modules','#22c55e','◈')+stat('Functions',s.functions,'Total functions','#8b5cf6','ƒ')+stat('Classes',s.classes,'Total classes','#f97316','▣')}</div>`};
+const none=m=>card('Git History',`<p class="mu">${m}</p>`);
+function tree(){const t={};D.files.forEach(f=>{let n=t;f.path.split('/').forEach((p,i,a)=>{n=n[p]??=(i==a.length-1?null:{})})});
+const r=(n,d)=>Object.keys(n).sort((a,b)=>(n[a]===null)-(n[b]===null)||a.localeCompare(b)).map(k=>n[k]===null?`<div class="f">📄 ${esc(k)}</div>`:`<details ${d<2?'open':''}><summary>📁 ${esc(k)}/</summary>${r(n[k],d+1)}</details>`).join('');
+return `<div style="max-height:300px;overflow:auto">${r(t,0)}</div>`}
+const gleg=`<div class="mu" style="font-size:12px;margin-top:6px"><span class="dot" style="background:#3b82f6"></span>Internal Import <span class="dot" style="background:#22c55e;margin-left:12px"></span>External Library <span class="dot" style="background:#f97316;margin-left:12px"></span>Critical Dependency</div>`;
+function graph(w=560,h=300){const deg={},fin={};D.edges.forEach(([a,b])=>{deg[a]=(deg[a]||0)+1;deg[b]=(deg[b]||0)+1;fin[b]=(fin[b]||0)+1});
+const top=Object.keys(deg).sort((a,b)=>deg[b]-deg[a]).slice(0,6),ctr=top[0];if(!ctr)return '<p class="mu">No internal dependencies found.</p>';
+const crit=Object.keys(fin).sort((a,b)=>fin[b]-fin[a])[0],ext=D.ext.slice(0,3).map(e=>e[0]);
+const nodes=[...top.slice(1).map(n=>({n,c:n==crit?'#f97316':'#3b82f6'})),...ext.map(n=>({n,c:'#22c55e'}))],P={[ctr]:[w/2,h/2]},col={[ctr]:'#3b82f6'};
+nodes.forEach((x,i)=>{const a=-Math.PI/2+2*Math.PI*i/nodes.length+.3;P[x.n]=[w/2+w*.38*Math.cos(a),h/2+h*.36*Math.sin(a)];col[x.n]=x.c});
+const E=[];D.edges.forEach(([a,b])=>{if(P[a]&&P[b])E.push([a,b,col[b]])});
+ext.forEach(x=>{const f=top.find(t=>D.files.find(q=>q.path==t).ext.includes(x));if(f)E.push([f,x,'#22c55e'])});
+const nm=p=>p.split('/').pop().slice(0,14);
+const path=([a,b,c])=>{const p=P[a],q=P[b];return `<path d="M${p}Q${(p[0]+q[0])/2},${(p[1]+q[1])/2-30} ${q}" fill="none" stroke="${c}" stroke-width="1.6" opacity=".8"/>`};
+const nd=k=>{const[x,y]=P[k],big=k==ctr,ww=big?124:104,hh=big?42:30;return `<rect x="${x-ww/2}" y="${y-hh/2}" width="${ww}" height="${hh}" rx="8" fill="${col[k]}22" stroke="${col[k]}" stroke-width="1.5"/><text x="${x}" y="${y+4}" text-anchor="middle" fill="#e6ebf5" font-size="${big?14:12}" font-family="monospace">${esc(nm(k))}</text>`};
+return `<svg viewBox="0 0 ${w} ${h}">${E.map(path).join('')}${Object.keys(P).map(nd).join('')}</svg>`}
+function bars(){const s=S(),d=[['LOC',s.loc,'#3b82f6'],['Functions',s.functions,'#22c55e'],['Classes',s.classes,'#8b5cf6'],['Complexity',s.total_complexity,'#f97316']],m=Math.sqrt(Math.max(...d.map(x=>x[1])));
+return `<svg viewBox="0 0 400 210">${d.map((x,i)=>{const hh=Math.max(6,Math.sqrt(x[1])/m*140),X=30+i*92;return `<rect x="${X}" y="${175-hh}" width="56" height="${hh}" rx="4" fill="${x[2]}"/><text x="${X+28}" y="${167-hh}" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">${x[1]}</text><text x="${X+28}" y="196" text-anchor="middle" fill="#8592aa" font-size="11">${x[0]}</text>`}).join('')}</svg><p class="mu" style="font-size:11px">Bar height uses a square-root scale.</p>`}
+function donut(seg,mid,sub){const R=60,C=2*Math.PI*R,tot=seg.reduce((a,b)=>a+b[1],0)||1;let o=0;
+return `<svg viewBox="0 0 160 160" width="160"><circle cx="80" cy="80" r="${R}" fill="none" stroke="#1a2438" stroke-width="18"/>${seg.map(s=>{const l=s[1]/tot*C,e=`<circle cx="80" cy="80" r="${R}" fill="none" stroke="${s[2]}" stroke-width="18" stroke-dasharray="${l} ${C-l}" stroke-dashoffset="${-o}" transform="rotate(-90 80 80)"/>`;o+=l;return e}).join('')}<text x="80" y="82" text-anchor="middle" fill="#fff" font-size="26" font-weight="700">${mid}</text><text x="80" y="100" text-anchor="middle" fill="#8592aa" font-size="12">${sub}</text></svg>`}
+const legend=a=>a.map(x=>`<div style="margin:3px 0"><span class="dot" style="background:${x[1]}"></span>${esc(x[0])}${x[2]!=null?`<span class="mu" style="float:right;margin-left:18px">${x[2]}</span>`:''}</div>`).join('');
+const mi=()=>{const sc=S().scores,c=['#22c55e','#eab308','#3b82f6','#8b5cf6'],k=Object.keys(sc);return `<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">${donut(k.map((x,i)=>[x,sc[x],c[i]]),S().mi,S().mi_label)}<div>${legend(k.map((x,i)=>[x,c[i],sc[x]]))}</div></div>`};
+function line(m){const v=m.map(x=>x[1]),mx=Math.max(...v,1),X=i=>30+i*340/Math.max(1,v.length-1),pts=v.map((x,i)=>`${X(i)},${140-x/mx*110}`).join(' ');
+return `<svg viewBox="0 0 400 170"><polygon points="30,140 ${pts} 370,140" fill="#3b82f633"/><polyline points="${pts}" fill="none" stroke="#3b82f6" stroke-width="2"/>${m.map((x,i)=>`<text x="${X(i)}" y="160" text-anchor="middle" fill="#8592aa" font-size="11">${x[0].slice(2)}</text>`).join('')}</svg>`}
+const hot=n=>`<table><tr><th>Module</th><th>Complexity</th><th>Churn</th><th>Risk Level</th></tr>${D.hotspots.slice(0,n).map(h=>`<tr><td>${esc(h.path)}</td><td>${h.cx}</td><td>${h.churn}</td><td><span class="pill ${h.risk}">${h.risk}</span></td></tr>`).join('')}</table>`;
+const ago=d=>{const n=Math.round((Date.now()-new Date(d))/864e5);return n<1?'today':n<31?n+' days ago':Math.round(n/30)+' mo ago'};
+function gitview(){const g=D.git;if(!g)return none('No Git history found for this repository.');const tot=g.authors.reduce((a,b)=>a+b[1],0),c=['#3b82f6','#a855f7','#eab308','#22c55e','#8592aa'];
+return `<span class="pillb">⑂ ${esc(g.branch)}</span><div style="clear:both"></div><div class="row c3">${card('Code Metrics',bars())}${card('Maintainability Index',mi())}${card('Git Activity (commits / month)',line(g.monthly))}</div>
+<div class="row c3">${card('Recent Commits',g.recent.map((x,i)=>`<div class="tl"><span><span class="dot" style="background:${PAL[i%5]}"></span><code style="color:#c4b5fd">${esc(x[0])}</code> ${esc(x[3].slice(0,34))}</span><span class="mu">${ago(x[2])}</span></div>`).join(''))}
+${card('Top Contributors',`<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">${donut(g.authors.map((a,i)=>[a[0],a[1],c[i]]),g.authors.length,'Contributors')}<div style="font-size:13px">${legend(g.authors.map((a,i)=>[a[0].slice(0,18),c[i],Math.round(a[1]/tot*100)+'%']))}</div></div>`)}${card('High-Risk Modules',hot(5))}</div>`}
+const V=[
+()=>stats()+`<div class="row c2">${card('Top Hotspots',hot(6))}${card('Maintainability Index',mi())}</div>`+(D.git?`<div class="row">${card('Git Activity (commits / month)',line(D.git.monthly))}</div>`:''),
+()=>`<div class="bar"><div class="in">📁 ${esc(D.repo)}</div><label class="btn" style="padding:10px 22px">Browse<input type="file" accept=".json" hidden id="fi"></label><button class="pri" id="an">Analyze Repository</button></div>`+stats()+`<div class="row c2" style="grid-template-columns:1fr 1.2fr">${card('Repository Structure',tree())}${card('Dependency Graph',graph()+gleg)}</div>`,
+()=>card('Files',`<div style="overflow:auto"><table><tr><th>File</th><th>LOC</th><th>Funcs</th><th>Max CC</th><th>Smells</th><th>Churn</th></tr>${[...D.files].sort((a,b)=>b.loc-a.loc).slice(0,100).map(f=>`<tr title="${esc(f.smells.join('; '))}"><td>${esc(f.path)}</td><td>${f.loc}</td><td>${f.fn}</td><td>${f.cx}</td><td>${f.smells.length}</td><td>${f.churn}</td></tr>`).join('')}</table></div>`),
+()=>`<div class="row c2" style="grid-template-columns:1.5fr 1fr">${card('Dependency Graph',graph(700,380)+gleg)}${card('Most Depended-On',`<table><tr><th>Module</th><th>Imported by</th></tr>${[...D.files].sort((a,b)=>b.fanin-a.fanin).slice(0,8).map(f=>`<tr><td>${esc(f.path)}</td><td>${f.fanin}</td></tr>`).join('')}</table>`)}</div>${card('External Libraries',D.ext.map(e=>`<span class="pill" style="background:#22c55e33;color:#86efac;margin-right:6px">${esc(e[0])} · ${e[1]}</span>`).join('')||'<span class="mu">None</span>')}`,
+()=>`<div class="row c2" style="grid-template-columns:1fr 1fr">${card('Code Metrics',bars())}${card('Maintainability Index',mi())}</div>${card('High-Risk Modules',hot(10))}`,
+gitview,
+()=>`<div style="text-align:right;margin-bottom:12px"><button class="pri" id="dl" style="height:38px">Download report.json</button></div>`+D.hotspots.map(h=>`<div class="card" style="margin-bottom:10px"><b>${esc(h.path)}</b> <span class="pill ${h.risk}">${h.risk}</span> <span class="mu">score ${h.score}</span><div class="mu" style="margin-top:6px">${h.why.map(esc).join(' · ')}</div></div>`).join('')];
+function render(){$('nav').innerHTML=NAV.map((n,i)=>`<a data-i="${i}" class="${i==view?'on':''}"><span>${n[1]}</span>${n[0]}</a>`).join('');
+$('main').innerHTML=`<h1>${T[view][0]}</h1><div class="sub">${T[view][1]}</div>`+V[view]();
+const fi=$('#fi');if(fi)fi.onchange=e=>e.target.files[0].text().then(t=>{D=JSON.parse(t);render()}).catch(()=>alert('Not a valid CBI report.json'));
+const an=$('#an');if(an)an.onclick=()=>alert('GitHub Pages is static, so analysis runs locally:\n\n  python -m cbi <repo_path> -o report.json\n\nthen click Browse and pick report.json.');
+const dl=$('#dl');if(dl)dl.onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='report.json';a.click()}}
+$('nav').onclick=e=>{const a=e.target.closest('a');if(a){view=+a.dataset.i;location.hash=view;render()}};
+fetch('report.json').then(r=>r.json()).then(j=>{D=j;render()}).catch(()=>$('main').textContent='Could not load report.json. Serve this folder over http: python -m http.server -d docs');
+</script></body></html>
